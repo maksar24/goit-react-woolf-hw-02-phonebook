@@ -17,7 +17,8 @@ export class App extends Component {
   };
 
   addNewContact = newContact => {
-    const checkName = this.state.contacts.some(
+    const { contacts } = this.state;
+    const checkName = contacts.some(
       ({ name }) => name.toLowerCase() === newContact.name.toLowerCase()
     );
 
@@ -34,15 +35,21 @@ export class App extends Component {
     this.setState({ filter: e.target.value });
   };
 
+  filterContacts = () => {
+    const { contacts, filter } = this.state;
+    const filteredContacts = contacts.filter(({ name }) =>
+      name.toLowerCase().includes(filter.toLowerCase())
+    );
+    return filteredContacts;
+  };
+
   deleteContact = id => {
-    this.setState(prev => ({
-      contacts: prev.contacts.filter(el => el.id !== id),
+    this.setState(({ contacts }) => ({
+      contacts: contacts.filter(contact => contact.id !== id),
     }));
   };
 
   render() {
-    const { contacts, filter } = this.state;
-
     return (
       <Wrapper>
         <Title>Phonebook</Title>
@@ -51,8 +58,7 @@ export class App extends Component {
         <SecondaryTitle>Contacts</SecondaryTitle>
         <Filter onSearch={this.searchContact} />
         <ContactList
-          data={contacts}
-          searchName={filter}
+          data={this.filterContacts()}
           handleDelete={this.deleteContact}
         />
       </Wrapper>
